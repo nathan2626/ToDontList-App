@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from "../../../router";
 
 export const login = ({ commit }, form) => {
     axios.post(
@@ -20,6 +21,7 @@ export const login = ({ commit }, form) => {
         }
 
         commit('data', user)
+        router.push({name : 'Me'});
 
     }).catch((error) => {
         console.log(error)
@@ -46,6 +48,8 @@ export const register = ({ commit }, form) => {
         }
 
         commit('data', user)
+        router.push({name : 'Login'});
+
     }).catch((error) => {
         console.log(error)
     });
@@ -64,9 +68,12 @@ export const logout = ({ commit, state }) => {
             }
         }).then((response) => {
         console.log(response);
+        router.push({name : 'Home'});
     }).catch((error) => {
         console.log(error)
     });
     commit('token', null);
     commit('data', {});
 }
+
+// export const addTask = ({ commit})
