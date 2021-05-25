@@ -3,7 +3,7 @@ import router from "../../../router";
 
 export const login = ({ commit }, form) => {
     axios.post(
-        'http://127.0.0.1:8000/api/auth/login',
+        'https://todontlist-api.herokuapp.com/api/auth/login',
         {
             email: form.email,
             password: form.password,
@@ -30,7 +30,7 @@ export const login = ({ commit }, form) => {
 
 export const register = ({ commit }, form) => {
     axios.post(
-        'http://127.0.0.1:8000/api/auth/register',
+        'https://todontlist-api.herokuapp.com/api/auth/register',
         {
             name: form.name,
             email: form.email,
@@ -62,7 +62,7 @@ export const logout = ({ commit, state }) => {
     }
 
     axios.post(
-        'http://127.0.0.1:8000/api/auth/logout', {}, {
+        'https://todontlist-api.herokuapp.com/api/auth/logout', {}, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -76,4 +76,87 @@ export const logout = ({ commit, state }) => {
     commit('data', {});
 }
 
-// export const addTask = ({ commit})
+export const addTask = ({ commit, getters }, form) => {
+
+    if(!form.body || !form.done){
+        return;
+    }
+
+    axios.post(
+        'https://todontlist-api.herokuapp.com/api/tasks', form, {
+            headers: {
+                'Authorization': `Bearer ${getters.token}`
+            }
+        }
+    ).then((response) => {
+        console.log(response);
+
+        commit('addTask', response.data.task)
+
+    }).catch((error) => {
+        console.log(error)
+    });
+}
+
+export const editTask = ({ commit, getters }, task) => {
+
+    console.log(task);
+
+    if(!task.body || !task.done){
+        return;
+    }
+
+    axios.put(
+        `https://todontlist-api.herokuapp.com/api/tasks/${task.id}`,
+        {
+            body: task.body,
+            done: task.done
+        },{
+            headers: {
+                'Authorization': `Bearer ${getters.token}`
+            }
+        }
+    ).then((response) => {
+        console.log(response);
+
+        commit('editTask', response.data.task[0])
+
+    }).catch((error) => {
+        console.log(error)
+    });
+}
+
+export const deleteTask = ({ commit, getters }, id) => {
+
+    axios.delete(
+        `https://todontlist-api.herokuapp.com/api/tasks/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${getters.token}`
+            }
+        }
+    ).then((response) => {
+        console.log(response);
+
+        commit('deleteTask', id)
+
+    }).catch((error) => {
+        console.log(error)
+    });
+}
+
+export const tasks = ({ commit, getters }) => {
+    axios.get(
+        'https://todontlist-api.herokuapp.com/api/tasks', {
+            headers: {
+                'Authorization': `Bearer ${getters.token}`
+            }
+        }
+    ).then((response) => {
+        console.log(response);
+
+        commit('tasks', response.data.tasks)
+
+    }).catch((error) => {
+        console.log(error)
+    });
+}
